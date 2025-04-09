@@ -1,0 +1,1 @@
+docker run -v /shared:/shared -it -p 8088:8088 -p 9870:9870 -p 8080:8080 -p 8888:8888 -p 3306:3306 -p 10000:10000 -p 4040:4040 bigdata-analysis-v1
