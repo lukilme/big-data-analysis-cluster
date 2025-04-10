@@ -3,6 +3,30 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    python3-dev \
+    python3-venv \
+    libkrb5-dev \
+    libmysqlclient-dev \
+    libssl-dev \
+    libldap2-dev \
+    libsasl2-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libsqlite3-dev \
+    libffi-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libpq-dev \
+    nodejs \
+    npm \
+    libbz2-dev \
+    libreadline-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libxmlsec1-dev \
+    liblzma-dev \
     openjdk-11-jdk \
     wget \
     curl \
@@ -20,7 +44,8 @@ RUN apt-get update && apt-get install -y \
     git \
     gcc \
     g++ \
-    make
+    make \
+    && apt-get clean
 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH=$PATH:$JAVA_HOME/bin
@@ -89,7 +114,6 @@ ENV SQOOP_CONF_DIR=${SQOOP_HOME}/conf
 RUN ln -s /usr/share/java/mysql-connector-java.jar ${SQOOP_HOME}/lib/
 
 ENV HUE_VERSION=4.11.0
-
 RUN wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && \
     tar xvf Python-2.7.18.tgz && \
     cd Python-2.7.18 && \
@@ -111,64 +135,10 @@ ENV MYSQL_CONNECTOR_VERSION=8.0.33
 
 RUN wget https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/${MYSQL_CONNECTOR_VERSION}/mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar -O /usr/share/java/mysql-connector-java.jar
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    python3-dev \
-    python3-venv \
-    libkrb5-dev \
-    libmysqlclient-dev \
-    libssl-dev \
-    libldap2-dev \
-    libsasl2-dev \
-    libxml2-dev \
-    libxslt-dev \
-    libsqlite3-dev \
-    libffi-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    libpq-dev \
-    nodejs \
-    npm
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    python3-dev \
-    libssl-dev \
-    libffi-dev \
-    libsqlite3-dev \
-    libbz2-dev \
-    libreadline-dev \
-    libncursesw5-dev \
-    xz-utils \
-    tk-dev \
-    libxml2-dev \
-    libxmlsec1-dev \
-    liblzma-dev
-
 RUN wget https://github.com/cloudera/hue/archive/refs/tags/release-${HUE_VERSION}.tar.gz && \
     tar -xzf release-${HUE_VERSION}.tar.gz && \
     mv hue-release-${HUE_VERSION} /opt/hue && \
     rm release-${HUE_VERSION}.tar.gz
-
-    RUN apt-get update && apt-get install -y \
-    build-essential \
-    python3 \
-    python3-pip \
-    python3-dev \
-    libkrb5-dev \
-    libmysqlclient-dev \
-    libssl-dev \
-    libldap2-dev \
-    libsasl2-dev \
-    libxml2-dev \
-    libxslt-dev \
-    libsqlite3-dev \
-    libffi-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    libpq-dev \
-    nodejs \
-    npm \
-    && apt-get clean
 
 RUN pip3 install --upgrade pip
 
@@ -194,6 +164,8 @@ RUN service mysql start && \
     "
 COPY start-services.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start-services.sh
+
+WORKDIR /
 
 EXPOSE 8088 9870 8080 8888 3306 10000 4040
 
