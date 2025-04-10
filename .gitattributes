@@ -1,0 +1,3 @@
+*.hql.sql linguist-detectable=true
+*.hql.sql linguist-language=hiveql
+*.hql.sql text

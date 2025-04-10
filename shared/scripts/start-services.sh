@@ -123,7 +123,8 @@ done
 echo "Criando diretórios HDFS..."
 run_as_hadoop "hdfs dfs -mkdir -p /tmp /user/hive/warehouse"
 run_as_hadoop "hdfs dfs -chmod -R 1777 /tmp"
-run_as_hadoop "hdfs dfs -chmod -R 775 /user/hive/warehouse"
+run_as_hadoop "hdfs dfs -chmod -R 777 /user/hive/warehouse"
+run_as_hadoop "hdfs dfs -chown hive:hive /user/hive/warehouse"
 
 echo "Configuração concluída com sucesso!"
 
