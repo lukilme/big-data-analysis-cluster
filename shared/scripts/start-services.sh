@@ -126,6 +126,14 @@ run_as_hadoop "hdfs dfs -chmod -R 1777 /tmp"
 run_as_hadoop "hdfs dfs -chmod -R 777 /user/hive/warehouse"
 run_as_hadoop "hdfs dfs -chown hive:hive /user/hive/warehouse"
 
+run_as_hadoop "hdfs dfs -chmod -R 777 /user"
+run_as_hadoop "hdfs dfs -chown root:supergroup /user"
+
+# hdfs dfs -chmod 755 /user
+# hdfs dfs -chmod -R 777 /user/hive/warehouse  
+# hdfs dfs -chown -R root:supergroup /user/hive/warehouse
+# hdfs dfs -chmod -R 755 /user/hive/warehouse
+
 echo "Configuração concluída com sucesso!"
 
 # if [ ! -d "/tmp/hadoop-hadoop/dfs/name" ]; then
