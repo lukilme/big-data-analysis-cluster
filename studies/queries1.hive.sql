@@ -122,6 +122,29 @@ ORDER BY total_login_count ASC;
 -- 7. User totals with ranking: Build a result set containing user_id, total_login_count, and
 -- their rank (1 = most logins) using ROW_NUMBER().
 
+SELECT
+    ROW_NUMBER() OVER (ORDER BY COUNT(*)),
+    host AS heavy_host,
+    COUNT(*) AS total_login_count
+FROM dwd_login
+GROUP BY host
+ORDER BY total_login_count DESC
+LIMIT 10;
+
+--best answer:
+SELECT
+    ROW_NUMBER() OVER (ORDER BY total_login_count DESC) AS rank,
+    host AS heavy_host,
+    total_login_count
+FROM (
+    SELECT
+        host,
+        COUNT(*) AS total_login_count
+    FROM dwd_login
+    GROUP BY host
+) AS aggregated_data
+ORDER BY total_login_count DESC
+LIMIT 10;
 
 
 -- 8. Top-10 most active users: Using any window function you like, list the 10 users with
