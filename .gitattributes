@@ -1,0 +1,3 @@
+*.hive.sql linguist-detectable=true
+*.hive.sql linguist-language=hiveql
+*.hive.sql text
