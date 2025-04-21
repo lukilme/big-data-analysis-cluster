@@ -21,4 +21,8 @@
         <name>hadoop.proxyuser.hadoop.groups</name>
         <value>*</value>
     </property>
+    <property>
+        <name>fs.client.htrace.impl</name>
+        <value>org.apache.htrace.core.Tracer</value>
+    </property>
 </configuration>

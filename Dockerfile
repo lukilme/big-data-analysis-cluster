@@ -114,22 +114,22 @@ ENV SQOOP_CONF_DIR=${SQOOP_HOME}/conf
 RUN ln -s /usr/share/java/mysql-connector-java.jar ${SQOOP_HOME}/lib/
 
 ENV HUE_VERSION=4.11.0
-RUN wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && \
-    tar xvf Python-2.7.18.tgz && \
-    cd Python-2.7.18 && \
-    ./configure \
-        --enable-optimizations \
-        --with-ensurepip=install \
-        --enable-unicode=ucs4 \
-        --with-system-ffi \
-        --with-openssl=/usr/include/openssl \
-        LDFLAGS="-L/usr/lib/x86_64-linux-gnu" && \
-    make -j$(nproc) && \
-    make altinstall && \
-    cd .. && \
-    rm -rf Python-2.7.18*
+# RUN wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && \
+#     tar xvf Python-2.7.18.tgz && \
+#     cd Python-2.7.18 && \
+#     ./configure \
+#         --enable-optimizations \
+#         --with-ensurepip=install \
+#         --enable-unicode=ucs4 \
+#         --with-system-ffi \
+#         --with-openssl=/usr/include/openssl \
+#         LDFLAGS="-L/usr/lib/x86_64-linux-gnu" && \
+#     make -j$(nproc) && \
+#     make altinstall && \
+#     cd .. && \
+#     rm -rf Python-2.7.18*
 
-RUN python2.7 --version
+# RUN python2.7 --version
 
 ENV MYSQL_CONNECTOR_VERSION=8.0.33
 

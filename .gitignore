@@ -1,2 +1,5 @@
 shared/data/*.csv
 *.log
+*/lab/
+shared/data/*.json
+

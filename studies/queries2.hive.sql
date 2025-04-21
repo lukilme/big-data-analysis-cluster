@@ -1,17 +1,97 @@
 -- Advanced HiveQL Practice – Login Analytics (25 Hardcore Exercises)
 -- Dataset: Sparkify User Activity Log Data (Kaggle) Link:
--- https://www.kaggle.com/datasets/udacity/sparkify-user-activity-tracker Load the log data into
--- a Hive table named `dwd_login` with at least the following columns: • user_id (STRING) •
--- device_id (STRING) • login_time (TIMESTAMP) Assume that a record represents a successful user
--- login event. Answer each of the 25 questions below using HiveQL.
+-- https://www.kaggle.com/datasets/udacity/sparkify-user-activity-tracker Load 
+-- the log data into a Hive table named `dwd_login` with at least the following 
+-- columns: • user_id (STRING) • device_id (STRING) • login_time (TIMESTAMP) 
+-- Assume that a record represents a successful user login event. 
+-- Answer each of the 25 questions below using HiveQL.
+CREATE DATABASE ods;
+CREATE DATABASE dwd;
+CREATE DATABASE ads;
+
+USE ods;
+
+CREATE TABLE ods_login(
+    ts BIGINT,
+    userId STRING,
+    sessionId STRING,
+    page STRING,
+    auth STRING,
+    method STRING,
+    status INT,
+    level STRING,
+    itemInSession INT,
+    location STRING,
+    userAgent STRING,
+    lastName STRING,
+    firstName STRING,
+    registration BIGINT,
+    gender STRING,
+    artist STRING,
+    song STRING,
+    length FLOAT
+)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+STORED AS TEXTFILE;
+
+LOAD DATA INPATH '/user/data.json' INTO TABLE ods_login;
+
+USE dwd;
+
+CREATE TABLE dwd_login(
+    login_time TIMESTAMP COMMENT 'Data e hora do evento de login',
+    user_id STRING COMMENT 'Identificador único do usuário',
+    session_id STRING COMMENT 'Identificador da sessão do usuário',
+    page STRING COMMENT 'Página acessada',
+    auth STRING COMMENT 'Tipo de autenticação',
+    method STRING COMMENT 'Método de requisição',
+    status INT COMMENT 'Código de status HTTP retornado',
+    level STRING COMMENT 'Nível de acesso do usuário',
+    item_session INT COMMENT 'Índice do item na sessão',
+    location STRING COMMENT 'Localização do usuário',
+    user_agent STRING COMMENT 'Informações do navegador e dispositivo',
+    last_name STRING COMMENT 'Sobrenome do usuário',
+    first_name STRING COMMENT 'Primeiro nome do usuário',
+    registration TIMESTAMP COMMENT 'Timestamp de registro do usuário',
+    gender STRING COMMENT 'Gênero do usuário',
+    artist STRING COMMENT 'Artista relacionado ao evento',
+    song STRING COMMENT 'Música ou conteúdo acessado',
+    length FLOAT COMMENT 'Duração da mídia em segundos'
+)
+COMMENT 'Tabela de logins detalhados no nível DWD'
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+INSERT INTO TABLE dwd.dwd_login
+SELECT
+    from_unixtime(ts) AS login_time,
+    userId AS user_id,
+    sessionId AS session_id,
+    page,
+    auth,
+    method,
+    status,
+    level,
+    itemInSession AS item_session,
+    location,
+    userAgent AS user_agent,
+    lastName AS last_name,
+    firstName AS first_name,
+    from_unixtime(registration) AS registration,
+    gender,
+    artist,
+    song,
+    length
+FROM ods.ods_login;
 
 
--- 1. Compute the total number of logins for every calendar day in the dataset and list the five
--- days with the highest totals.
+-- 1. Compute the total number of logins for every calendar day 
+-- in the dataset and list the five days with the highest totals.
 
 
--- 2. For each calendar day, find the distinct count of devices and rank the days from most to
--- fewest active devices.
+-- 2. For each calendar day, find the distinct count of devices 
+-- and rank the days from most to fewest active devices.
 
 
 -- 3. Calculate the overall average number of logins per active device (distinct device_id) across
