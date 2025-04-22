@@ -2,6 +2,11 @@ schematool -dbType mysql -initSchema --verbose
 
 export HADOOP_OPTS="--add-opens=java.base/java.net=ALL-UNNAMED"
 
+hadoop_profile="/home/hadoop/.bashrc"
+cat <<EOL > "$hadoop_profile"
+export HIVE_AUX_JARS_PATH=/opt/tez/*:/opt/tez/lib/*
+EOL
+
 echo "action 1"
 hive --service metastore > metastore.log 2>&1 &
 
@@ -18,5 +23,10 @@ sleep 8
 
 echo "Done!"
 
-#beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw --verbose=true"
+beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true -e "SELECT 1"
+
+
+#beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
 echo "beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
+# beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" < ./setup.hive.sql
+
