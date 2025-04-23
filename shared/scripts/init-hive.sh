@@ -23,10 +23,10 @@ sleep 8
 
 echo "Done!"
 
-beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true -e "SELECT 1"
+#beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true -e "SELECT 1"
 
 
 #beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
-echo "beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
+#echo "beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
 # beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" < ./setup.hive.sql
 

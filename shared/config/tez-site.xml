@@ -1,0 +1,10 @@
+<configuration>
+  <property>
+    <name>tez.lib.uris</name>
+    <value>${fs.defaultFS}/apps/tez/0.9.2/apache-tez-0.9.2-bin.tar.gz</value>
+  </property>
+  <property>
+    <name>tez.use.cluster.hadoop-libs</name>
+    <value>false</value>
+  </property>
+</configuration>

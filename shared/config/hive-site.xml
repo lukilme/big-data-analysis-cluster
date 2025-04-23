@@ -25,40 +25,4 @@
         <name>hive.metastore.warehouse.dir</name>
         <value>/user/hive/warehouse</value>
     </property>
-    <property>
-    <name>hive.execution.engine</name>
-        <value>tez</value> 
-    </property>
-    <property>
-        <name>hive.tez.container.size</name>
-        <value>1024</value>
-    </property>
-    <property>
-        <name>hive.server2.active.passive.ha.enable</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>hive.metastore.event.db.notification.api.auth</name>
-        <value>false</value>
-    </property>
-    <property>
-    <name>tez.lib.uris</name>
-    <value>hdfs:///apps/tez/apache-tez-0.9.2-bin-nodir.tar.gz</value>
-    </property>
-    <property>
-        <name>hive.server2.logging.operation.enabled</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>hive.server2.logging.operation.log.location</name>
-        <value>/var/log/hive/operation_logs</value>
-    </property>
-    <property>
-        <name>hive.server2.logging.operation.level</name>
-        <value>DEBUG</value>
-    </property>
-    <property>
-    <name>tez.history.logging.service.class</name>
-    <value>org.apache.tez.dag.history.logging.ats.ATSHistoryLoggingService</value>
-</property>
 </configuration>

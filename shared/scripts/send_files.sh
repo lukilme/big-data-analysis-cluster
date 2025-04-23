@@ -4,6 +4,7 @@ config_files=(
     "/shared/config/hive-site.xml:$HIVE_HOME/conf/hive-site.xml"
     "/shared/config/yarn-site.xml:$HADOOP_HOME/etc/hadoop/yarn-site.xml"
     "/shared/config/mapred-site.xml:$HADOOP_HOME/etc/hadoop/mapred-site.xml"
+    "/shared/config/tez-site.xml:/opt/tez/conf/tez-site.xml"
 )
 
 for file_pair in "${config_files[@]}"; do
