@@ -64,6 +64,7 @@ export HADOOP_HOME="$HADOOP_HOME"
 export HIVE_HOME="$HIVE_HOME"
 export JAVA_HOME="$JAVA_HOME"
 export PATH="\$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$HIVE_HOME/bin"
+export PATH="$PATH:/shared/scripts/*"
 EOL
 chown hadoop:hadoop "$hadoop_profile"
 

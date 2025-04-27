@@ -63,6 +63,9 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 STORED AS TEXTFILE;
 
+SET hive.execution.engine;
+
+
 INSERT INTO TABLE dwd.dwd_login
 SELECT
     from_unixtime(ts) AS login_time,

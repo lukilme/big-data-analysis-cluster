@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-TEZ_VERSION="0.9.2"
+TEZ_VERSION="0.10.4"
 TEZ_HOME="/opt/tez"
 HADOOP_HOME="${HADOOP_HOME:-}"
 HIVE_HOME="${HIVE_HOME:-}"

@@ -1,32 +1,30 @@
-schematool -dbType mysql -initSchema --verbose
+#!/bin/bash
+
+# Inicializar o esquema do Hive
+schematool -dbType mysql -initSchema \
+  --verbose 
 
 export HADOOP_OPTS="--add-opens=java.base/java.net=ALL-UNNAMED"
 
 hadoop_profile="/home/hadoop/.bashrc"
-cat <<EOL > "$hadoop_profile"
-export HIVE_AUX_JARS_PATH=/opt/tez/*:/opt/tez/lib/*
-EOL
+echo "export HIVE_AUX_JARS_PATH=/opt/tez/*:/opt/tez/lib/*" >> "$hadoop_profile"
+source "$hadoop_profile"  
 
-echo "action 1"
+echo "Iniciando Hive Metastore..."
 hive --service metastore > metastore.log 2>&1 &
 
-sleep 5
-cat metastore.log
-sleep 5
-cat metstore.log
-sleep 5
-cat metstore.log
+sleep 10
+if grep -q "Starting Hive Metastore Server" metastore.log; then
+    echo "Metastore iniciado com sucesso."
+else
+    echo "Falha ao iniciar Metastore. Verifique metastore.log."
+    exit 1
+fi
 
-echo "action 2"
-hive --service hiveserver2 --hiveconf hive.server2.thrift.port=10000 --hiveconf hive.server2.thrift.bind.host=0.0.0.0 > hiveserver2.log 2>&1 &
-sleep 8
+echo "Iniciando HiveServer2..."
+hive --service hiveserver2 --hiveconf hive.server2.thrift.port=10000 \
+    --hiveconf hive.server2.thrift.bind.host=0.0.0.0 > hiveserver2.log 2>&1 &
+
+sleep 15
 
 echo "Done!"
-
-#beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true -e "SELECT 1"
-
-
-#beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
-#echo "beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" --verbose=true"
-# beeline -u "jdbc:hive2://localhost:10000" -n "hive" -p "hivepw" < ./setup.hive.sql
-
