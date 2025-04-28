@@ -66,7 +66,7 @@ STORED AS TEXTFILE;
 SET hive.execution.engine;
 
 
-INSERT INTO TABLE dwd.dwd_login
+INSERT INTO TABLE dwd_login
 SELECT
     from_unixtime(ts) AS login_time,
     userId AS user_id,
@@ -86,7 +86,7 @@ SELECT
     artist,
     song,
     length
-FROM ods.ods_login;
+FROM ods_login;
 
 
 -- 1. Compute the total number of logins for every calendar day 

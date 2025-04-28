@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Inicializar o esquema do Hive
-schematool -dbType mysql -initSchema \
-  --verbose 
+
 
 export HADOOP_OPTS="--add-opens=java.base/java.net=ALL-UNNAMED"
 
