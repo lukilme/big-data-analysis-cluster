@@ -1,7 +1,7 @@
 <configuration>
   <property>
     <name>tez.lib.uris</name>
-    <value>hdfs://localhost:9000/apps/tez-0.10.4.tar-gz</value>
+      <value>hdfs://localhost:9000/apps/tez,hdfs://localhost:9000/apps/tez/lib</value>
   </property>
   <property>
   <name>tez.am.shuffle.auxiliary-service.id</name>

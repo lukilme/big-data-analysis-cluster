@@ -49,13 +49,17 @@ export TEZ_JARS=\${TEZ_HOME}/*:\${TEZ_HOME}/lib/*
 export HADOOP_CLASSPATH=\${TEZ_CONF_DIR}:\${TEZ_JARS}:\${HADOOP_CLASSPATH}
 EOF
 
+#rm $HADOOP_HOME/share/hadoop/common/lib/protobuf-java-2.5.0.jar 
+
 cat >> "${HIVE_CONF_DIR}/hive-env.sh" <<EOF
 
 # Configuração do Tez
-export TEZ_HOME=${TEZ_HOME}
-export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:${TEZ_HOME}/lib/*
-export HIVE_AUX_JARS_PATH=${TEZ_HOME}/lib/*,${HIVE_AUX_JARS_PATH}
+export HADOOP_HOME=/opt/hadoop
+export HIVE_HOME=/opt/hive
+export TEZ_HOME=/opt/apache-tez-0.10.4-bin
 
+export HADOOP_CLASSPATH=$HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*:$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/mapreduce/lib/*:$HADOOP_HOME/share/hadoop/yarn/*:$HADOOP_HOME/share/hadoop/yarn/lib/*:$TEZ_HOME/*:$TEZ_HOME/lib/*
+export HIVE_AUX_JARS_PATH=$TEZ_HOME/lib/tez-*.jar
 EOF
 
 wget https://repo1.maven.org/maven2/org/apache/tez/tez-aux-services/0.10.4/tez-aux-services-0.10.4.jar \

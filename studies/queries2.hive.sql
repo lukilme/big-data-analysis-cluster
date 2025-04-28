@@ -63,30 +63,33 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 STORED AS TEXTFILE;
 
-SET hive.execution.engine;
+SET hive.execution.engine=tez;            
+SET mapreduce.map.memory.mb=4096;        
+SET mapreduce.map.java.opts=-Xmx3072m;    
 
 
-INSERT INTO TABLE dwd_login
+INSERT OVERWRITE TABLE dwd_login
 SELECT
-    from_unixtime(ts) AS login_time,
-    userId AS user_id,
-    sessionId AS session_id,
-    page,
-    auth,
-    method,
-    status,
-    level,
-    itemInSession AS item_session,
-    location,
-    userAgent AS user_agent,
-    lastName AS last_name,
-    firstName AS first_name,
-    from_unixtime(registration) AS registration,
-    gender,
-    artist,
-    song,
-    length
-FROM ods_login;
+  from_unixtime(ts)       AS login_time,
+  userId                  AS user_id,
+  sessionId               AS session_id,
+  page,
+  auth,
+  method,
+  status,
+  level,
+  itemInSession           AS item_session,
+  location,
+  userAgent               AS user_agent,
+  lastName                AS last_name,
+  firstName               AS first_name,
+  from_unixtime(registration) AS registration,
+  gender,
+  artist,
+  song,
+  length
+FROM ods.ods_login;
+
 
 
 -- 1. Compute the total number of logins for every calendar day 
