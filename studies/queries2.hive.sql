@@ -67,6 +67,8 @@ SET hive.execution.engine=tez;
 SET mapreduce.map.memory.mb=4096;        
 SET mapreduce.map.java.opts=-Xmx3072m;    
 
+SET hive.tez.container.size=4096;
+SET hive.tez.java.opts=-Xmx3072m;
 
 INSERT OVERWRITE TABLE dwd_login
 SELECT

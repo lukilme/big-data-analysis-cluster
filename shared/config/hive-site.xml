@@ -11,7 +11,7 @@
 </property>
     <property>
         <name>hive.execution.engine</name>
-        <value>mr</value>
+        <value>tez</value>
     </property>
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
@@ -31,6 +31,6 @@
     </property>
     <property>
         <name>tez.lib.uris</name>
-        <value>hdfs://localhost:9000/apps/tez</value>
+        <value>hdfs://localhost:9000/apps/apache-tez-0.10.4-bin.tar.gz</value>
     </property>
 </configuration>

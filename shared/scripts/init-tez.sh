@@ -34,6 +34,7 @@ tar -xzf /tmp/${TEZ_TARBALL} -C ${TEZ_INSTALL_DIR}
 
 echo "Publicando Tez no HDFS em ${HDFS_TEZ_DIR}..."
 run_as_hadoop "hdfs dfs -mkdir -p ${HDFS_TEZ_DIR}"
+run_as_hadoop "hdfs dfs -chmod -R 755 ${HDFS_TEZ_DIR}"
 run_as_hadoop "hdfs dfs -put -f /tmp/${TEZ_TARBALL} ${HDFS_TEZ_DIR}"
 
 echo "Configurando Hive para usar o Tez..."

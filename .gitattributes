@@ -4,4 +4,5 @@
 *.xml linguist-language=xml
 *.conf linguist-detectable=true
 *.conf linguist-language=ini
+*.ipynb linguist-detectable=false
 *.hive.sql text
