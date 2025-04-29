@@ -1,4 +1,8 @@
-[0m[[0m[31merror[0m] [0m[0m/shared/src/scala/template/src/main/scala/Main.scala:37:31: not found: value ratingCount[0m
-[0m[[0m[31merror[0m] [0m[0m    println(s"Total ratings: $ratingCount")[0m
-[0m[[0m[31merror[0m] [0m[0m                              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/shared/src/scala/template/src/main/scala/Main.scala:155:36: overloaded method value from_json with alternatives:[0m
+[0m[[0m[31merror[0m] [0m[0m  (e: org.apache.spark.sql.Column,schema: org.apache.spark.sql.Column)org.apache.spark.sql.Column <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (e: org.apache.spark.sql.Column,schema: org.apache.spark.sql.types.DataType)org.apache.spark.sql.Column <and>[0m
+[0m[[0m[31merror[0m] [0m[0m  (e: org.apache.spark.sql.Column,schema: org.apache.spark.sql.types.StructType)org.apache.spark.sql.Column[0m
+[0m[[0m[31merror[0m] [0m[0m cannot be applied to (org.apache.spark.sql.ColumnName, String)[0m
+[0m[[0m[31merror[0m] [0m[0m    val parsedDF = socketDF.select(from_json($"value", streamingSchema).as("data"))[0m
+[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

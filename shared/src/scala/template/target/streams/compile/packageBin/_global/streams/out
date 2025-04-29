@@ -1,7 +1,15 @@
 [0m[[0m[0mdebug[0m] [0m[0mPackaging /shared/src/scala/template/target/scala-2.12/spark-hive-example_2.12-0.1.jar ...[0m
 [0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Rating$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /shared/src/scala/template/target/scala-2.12/classes/Rating$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	Rating.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /shared/src/scala/template/target/scala-2.12/classes/Rating.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	SparkHiveExample$.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /shared/src/scala/template/target/scala-2.12/classes/SparkHiveExample$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	SparkHiveExample$$typecreator1$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /shared/src/scala/template/target/scala-2.12/classes/SparkHiveExample$$typecreator1$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	SparkHiveExample$$typecreator6$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /shared/src/scala/template/target/scala-2.12/classes/SparkHiveExample$$typecreator6$1.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	SparkHiveExample.class[0m
 [0m[[0m[0mdebug[0m] [0m[0m	  /shared/src/scala/template/target/scala-2.12/classes/SparkHiveExample.class[0m
 [0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m

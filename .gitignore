@@ -3,5 +3,4 @@ shared/data/*.csv
 */lab/
 shared/data/*.json
 project
-~data/*.zip
 target
