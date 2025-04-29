@@ -10,6 +10,13 @@ case class Rating(userId: Int, movieId: Int, rating: Double, timestamp: Long)
 
 object SparkHiveExample {
   def main(args: Array[String]): Unit = {
+      
+  }
+  def part1(){
+    
+  }
+
+  def part2(){
     val spark = SparkSession.builder()
       .appName("Spark Hive Example")
       .master("local[*]")
@@ -142,7 +149,7 @@ object SparkHiveExample {
     rankedRatings.filter("userId = 196 AND rank <= 3").show()
     // val (model, test) = buildAndTrainALSModel(ratings)
     // evaluateModel(model, test)
-    spark.stop()  
+    spark.stop()
   }
 
   def buildAndTrainALSModel(ratings: DataFrame): (ALSModel, DataFrame) = {

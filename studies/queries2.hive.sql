@@ -63,11 +63,6 @@ ROW FORMAT DELIMITED
 FIELDS TERMINATED BY ','
 STORED AS TEXTFILE;
 
-SET hive.execution.engine=tez;            
-SET mapreduce.map.memory.mb=4096;        
-SET mapreduce.map.java.opts=-Xmx3072m;    
-
-
 USE dwd;
 
 SET hive.tez.container.size=4096;
@@ -77,7 +72,7 @@ SET hive.auto.convert.join=false;
 
 INSERT OVERWRITE TABLE dwd_login
 SELECT
-  from_unixtime(ts)       AS login_time,
+  from_unixtime(CAST(ts / 1000 AS BIGINT))     AS login_time,
   userId                  AS user_id,
   sessionId               AS session_id,
   page,
@@ -90,22 +85,39 @@ SELECT
   userAgent               AS user_agent,
   lastName                AS last_name,
   firstName               AS first_name,
-  from_unixtime(registration) AS registration,
+  from_unixtime(CAST(registration / 1000 AS BIGINT)) AS registration,
   gender,
   artist,
   song,
   length
 FROM ods.ods_login;
 
-
-
 -- 1. Compute the total number of logins for every calendar day 
 -- in the dataset and list the five days with the highest totals.
-
+SELECT aux.day_calendar, COUNT(*) AS count_logins
+FROM (
+  SELECT DAY(login_time) AS day_calendar,
+    user_id
+  FROM dwd.dwd_login
+) AS aux
+GROUP BY aux.day_calendar
+ORDER BY count_logins DESC
+LIMIT 5;
 
 -- 2. For each calendar day, find the distinct count of devices 
 -- and rank the days from most to fewest active devices.
-
+SELECT 
+  DENSE_RANK() OVER (ORDER BY count_logins DESC) AS rank,
+  day_calendar,
+  count_logins
+FROM (
+  SELECT 
+    DAY(login_time) AS day_calendar,
+    COUNT(DISTINCT session_id) AS count_logins
+  FROM dwd.dwd_login
+  GROUP BY DAY(login_time)
+) AS agg
+LIMIT 10;
 
 -- 3. Calculate the overall average number of logins per active device (distinct device_id) across
 -- the entire dataset, rounded to two decimals.
