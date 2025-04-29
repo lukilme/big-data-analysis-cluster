@@ -2,4 +2,6 @@ shared/data/*.csv
 *.log
 */lab/
 shared/data/*.json
-*/project/*
+project
+~data/*.zip
+target

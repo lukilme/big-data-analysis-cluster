@@ -67,8 +67,13 @@ SET hive.execution.engine=tez;
 SET mapreduce.map.memory.mb=4096;        
 SET mapreduce.map.java.opts=-Xmx3072m;    
 
+
+USE dwd;
+
 SET hive.tez.container.size=4096;
 SET hive.tez.java.opts=-Xmx3072m;
+ADD JAR hdfs:///apps/hive/lib/hive-hcatalog-core-4.0.1.jar;
+SET hive.auto.convert.join=false;
 
 INSERT OVERWRITE TABLE dwd_login
 SELECT

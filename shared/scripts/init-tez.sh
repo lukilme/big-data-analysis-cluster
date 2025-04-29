@@ -36,6 +36,8 @@ echo "Publicando Tez no HDFS em ${HDFS_TEZ_DIR}..."
 run_as_hadoop "hdfs dfs -mkdir -p ${HDFS_TEZ_DIR}"
 run_as_hadoop "hdfs dfs -chmod -R 755 ${HDFS_TEZ_DIR}"
 run_as_hadoop "hdfs dfs -put -f /tmp/${TEZ_TARBALL} ${HDFS_TEZ_DIR}"
+run_as_hadoop "hdfs dfs -mkdir -p /apps/tez"
+run_as_hadoop "hdfs dfs -put /opt/apache-tez-0.10.4-bin/* /apps/tez/"
 
 echo "Configurando Hive para usar o Tez..."
 cp -f "${HIVE_CONF_DIR}/hive-env.sh.template" "${HIVE_CONF_DIR}/hive-env.sh"
@@ -50,7 +52,7 @@ export TEZ_JARS=\${TEZ_HOME}/*:\${TEZ_HOME}/lib/*
 export HADOOP_CLASSPATH=\${TEZ_CONF_DIR}:\${TEZ_JARS}:\${HADOOP_CLASSPATH}
 EOF
 
-#rm $HADOOP_HOME/share/hadoop/common/lib/protobuf-java-2.5.0.jar 
+rm $HADOOP_HOME/share/hadoop/common/lib/protobuf-java-2.5.0.jar 
 
 cat >> "${HIVE_CONF_DIR}/hive-env.sh" <<EOF
 
