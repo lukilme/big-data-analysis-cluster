@@ -215,98 +215,282 @@ ORDER BY hour;
 
 -- 8. For every calendar day, identify the three devices with the highest login counts. Break ties
 -- by device_id ascending.
-
-
+WITH caledoscopio AS(
+  SELECT
+    TO_DATE(login_time) AS day,
+    session_id,
+    COUNT(*) AS cnt,
+    ROW_NUMBER() OVER (
+      PARTITION BY TO_DATE(login_time)
+      ORDER BY COUNT(*) DESC, session_id ASC
+    ) AS rn
+  FROM dwd_login
+  GROUP BY TO_DATE(login_time), session_id
+)
+SELECT day, session_id, cnt
+FROM caledoscopio
+WHERE rn <= 3
+ORDER BY day, rn
+LIMIT 5;
 
 -- 9. Count how many users logged in on three consecutive calendar days at least once during the
 -- entire observation window.
 
+WITH user_days AS (
+  SELECT
+    user_id,
+    TO_DATE(login_time) AS day
+  FROM dwd_login
+  GROUP BY user_id, TO_DATE(login_time)
+),
+sequences AS (
+  SELECT
+    user_id,
+    day,
+    LEAD(day, 1) OVER (PARTITION BY user_id ORDER BY day)  AS next_day,
+    LEAD(day, 2) OVER (PARTITION BY user_id ORDER BY day)  AS next_day2
+  FROM user_days
+)
+SELECT
+  COUNT(DISTINCT user_id) AS users_3
+FROM sequences
+WHERE next_day  = DATE_ADD(day, 1)
+  AND next_day2 = DATE_ADD(day, 2);
 
 
 -- 10. Build a 7■day rolling average of daily distinct user counts and list the result for every
 -- day after the first 6 days.
 
-
+WITH daily_users AS (
+  SELECT
+    TO_DATE(login_time) AS day,
+    COUNT(DISTINCT user_id) AS distinct_users
+  FROM dwd_login
+  GROUP BY TO_DATE(login_time)
+),
+rolling AS (
+  SELECT
+    day,
+    DISTINCT_USERS,
+    ROUND(
+      AVG(distinct_users) OVER (
+        ORDER BY day
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+      ),
+      2
+    ) AS rolling_avg_7day
+  FROM daily_users
+),
+ranked AS (
+  SELECT
+    day,
+    rolling_avg_7day,
+    ROW_NUMBER() OVER (ORDER BY day) AS rn
+  FROM rolling
+)
+SELECT day, rolling_avg_7day
+FROM ranked
+WHERE rn > 6
+ORDER BY day
+LIMIT 10;
 
 -- 11. Compute, for each month, the median daily login count (50th percentile) and the 95th
 -- percentile of daily login counts.
 
+WITH max_dt AS (
+  SELECT max(to_date(login_time)) AS latest_day FROM dwd_login
+),
+recent AS (
+  SELECT
+    to_date(login_time) AS day,
+    COUNT(*) AS total_logins,
+    COUNT(DISTINCT user_id) AS distinct_users
+  FROM dwd_login
+  WHERE to_date(login_time) >= (
+    SELECT date_sub(latest_day, 90) FROM max_dt
+  )
+  GROUP BY to_date(login_time)
+)
+SELECT
+  day,
+  total_logins,
+  distinct_users,
+  ROUND(total_logins / distinct_users, 2) AS login_user_ratio
+FROM recent
+ORDER BY login_user_ratio DESC
+LIMIT 5;
 
 
 -- 12. Find the day in the past 90 days (relative to the latest login_time) that has the highest
 -- ratio of total logins to distinct users.
 
 
-
 -- 13. Detect outlier days where total logins exceed the 30■day moving average by more than 3
 -- standard deviations.
 
+SET hive.strict.checks.type.safety=false;
 
+WITH daily AS (
+  SELECT
+    TO_DATE(login_time) AS day,
+    COUNT(*) AS cnt
+  FROM dwd_login
+  GROUP BY TO_DATE(login_time)
+),
+stats AS (
+  SELECT
+    day,
+    cnt,
+    AVG(cnt) OVER (
+      ORDER BY day
+      ROWS BETWEEN 29 PRECEDING AND CURRENT ROW
+    ) AS ma_30d,
+    STDDEV_SAMP(cnt) OVER (
+      ORDER BY day
+      ROWS BETWEEN 29 PRECEDING AND CURRENT ROW
+    ) AS sd_30d
+  FROM daily
+)
+SELECT
+  day,
+  cnt,
+  ma_30d,
+  sd_30d
+FROM stats
+WHERE cnt > ma_30d + 3 * sd_30d
+ORDER BY day;
 
 -- 14. For every device, calculate the variance of its daily login counts and list the 10 devices
 -- with the highest variance.
 
-
+WITH daily_dev AS (
+  SELECT
+    session_id,
+    to_date(login_time) AS day,
+    COUNT(*)            AS cnt
+  FROM dwd_login
+  GROUP BY session_id, to_date(login_time)
+),
+var_dev AS (
+  SELECT
+    session_id,
+    VARIANCE(cnt) AS variance_login
+  FROM daily_dev
+  GROUP BY session_id
+)
+SELECT
+  session_id,
+  variance_login
+FROM var_dev
+ORDER BY variance_login DESC
+LIMIT 10;
 
 -- 15. Build weekly cohorts based on a user’s first login week (ISO week). For each cohort,
 -- compute the retention matrix for weeks 0–4.
 
+-- WITH first_week AS (
+--   SELECT
+--     user_id,
+--     YEAR(login_time) AS yr,
+--     WEEKOFYEAR(login_time) AS cw,
+--     MIN(CAST(CONCAT(YEAR(login_time), '-', WEEKOFYEAR(login_time), '-1') AS DATE))
+--       OVER (PARTITION BY user_id) AS cohort_start
+--   FROM dwd_login
+-- ),
+-- activity AS (
+--   SELECT
+--     f.user_id,
+--     f.cw AS cohort_week,
+--     YEAR(dl.login_time) AS yr2,
+--     WEEKOFYEAR(dl.login_time) AS activity_week
+--   FROM first_week f
+--   JOIN dwd_login dl
+--     ON f.user_id = dl.user_id
+-- ),
+-- cohort_matrix AS (
+--   SELECT
+--     cohort_week,
+--     activity_week - cohort_week AS week_offset,
+--     COUNT(DISTINCT user_id) AS retained_users
+--   FROM activity
+--   GROUP BY cohort_week, activity_week - cohort_week
+--   HAVING week_offset BETWEEN 0 AND 4
+-- )
+-- SELECT
+--   cohort_week,
+--   week_offset,
+--   retained_users
+-- FROM cohort_matrix
+-- ORDER BY cohort_week, week_offset;
 
 
 -- 16. For each user, output the length of their longest streak of consecutive active days and
 -- rank users by streak length descending.
 
+WITH user_days AS (
+  SELECT
+    user_id,
+    TO_DATE(login_time) AS day
+  FROM dwd_login
+  GROUP BY user_id, TO_DATE(login_time)
+),
+seq AS (
+  SELECT
+    user_id,
+    day,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY day) AS rn
+  FROM user_days
+),
+groups AS (
+  SELECT
+    user_id,
+    day,
+    rn,
+    date_sub(day, rn) AS grp_key
+  FROM seq
+),
+streaks AS (
+  SELECT
+    user_id,
+    COUNT(*) AS streak_length
+  FROM groups
+  GROUP BY user_id, grp_key
+)
+SELECT
+  user_id,
+  MAX(streak_length) AS longest_streak
+FROM streaks
+GROUP BY user_id
+ORDER BY longest_streak DESC
+LIMIT 10;
 
 
 -- 17. Compute a histogram of logins by hour_of_day (0–23) across the full dataset and report the
 -- mode hour (most logins).
 
-
+WITH hourly AS (
+  SELECT
+    hour(login_time) AS hr,
+    COUNT(*)         AS cnt
+  FROM dwd_login
+  GROUP BY hour(login_time)
+)
+SELECT
+  hr,
+  cnt
+FROM hourly
+ORDER BY cnt DESC
+LIMIT 1;
 
 -- 18. Identify users who, on any single day, logged in from more than three distinct devices;
 -- list the user_id, the date, and the device count.
 
-
-
--- 19. Define a session as a series of logins from the same device where consecutive logins are at
--- most 30 minutes apart. Calculate the average session length per device and list the five
--- devices with the longest average session length.
-
-
-
--- 20. Categorize users based on their longest consecutive■day streak: 1–3 days, 4–7 days, and 8+
--- days. Return the count of users in each category.
-
-
-
--- 21. Using collect_set, build the set of distinct device_ids per user for each calendar month,
--- then compute the Jaccard similarity between consecutive months' sets for every user. List the
--- 10 users with the lowest similarity (largest change) along with the month pair and similarity
--- score.
-
-
-
--- 22. For each hour_of_day (0–23), calculate the 99th percentile of per■device login counts
--- across all devices. Identify and list the hours where this percentile is more than twice the
--- median of these 99th■percentile values.
-
-
-
--- 23. For every ISO week, create a three■stage funnel: • Stage■A – users with at least one
--- login that week • Stage■B – users with logins on ≥3 distinct days that week • Stage■C –
--- users with logins from ≥5 distinct devices that week Output the weekly conversion rates A→B
--- and B→C for the latest 12 weeks in the dataset.
-
-
-
--- 24. Identify "super■bursty" devices: those whose maximum daily login count is at least 10×
--- their median daily login count and where this burst occurred within the last 30 days of data.
--- Return device_id, burst_date, burst_count, and median_count, ordered by burst_count descending.
-
-
-
--- 25. Using a sliding 180■day window, compute a z■score for each day's total login count (value
--- minus mean divided by standard deviation of the window). Flag days where |z|■>■4 as extreme
--- anomalies and list them chronologically with their z■scores.
-
+SELECT
+  user_id,
+  TO_DATE(login_time) AS day,
+  COUNT(DISTINCT session_id) AS device_count
+FROM dwd_login
+GROUP BY user_id, TO_DATE(login_time)
+HAVING device_count > 3
+ORDER BY user_id, day;
 
