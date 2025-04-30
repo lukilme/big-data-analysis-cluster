@@ -122,65 +122,150 @@ LIMIT 10;
 -- 3. Calculate the overall average number of logins per active device (distinct device_id) across
 -- the entire dataset, rounded to two decimals.
 
+SELECT ROUND(AVG(total_logins),2)
+FROM (
+  SELECT 
+    session_id,
+    COUNT(*) AS total_logins
+  FROM dwd.dwd_login
+  GROUP BY session_id
+) AS agg;
 
 -- 4. List the top 10 users who have the greatest total number of logins, ordered by the smallest
 -- totals first.
-
+WITH user_logins AS(
+  SELECT user_id,
+  COUNT(*) AS count_logins
+  FROM dwd.dwd_login
+  GROUP BY user_id
+),total_aux AS(
+  SELECT user_id,
+    count_logins 
+  FROM user_logins
+  ORDER BY count_logins
+  LIMIT 10
+)
+SELECT user_id, count_logins
+FROM total_aux
+ORDER BY count_logins ASC;
 
 -- 5. Classify devices by total login counts into buckets (1–5, 6–10, 11+) and output the number
 -- of devices in each bucket.
+
+WITH device_counts AS (
+  SELECT
+    session_id,
+    COUNT(*) AS aux
+  FROM dwd_login
+  GROUP BY session_id
+)
+SELECT
+  CASE 
+    WHEN aux BETWEEN 1 AND 5 THEN '1-5'
+    WHEN aux BETWEEN 6 AND 10 THEN '6-10'
+    ELSE '11+'
+  END AS bucket,
+  COUNT(*) AS num_devices
+FROM device_counts
+GROUP BY
+  CASE
+    WHEN aux BETWEEN 1 AND 5 THEN '1-5'
+    WHEN aux BETWEEN 6 AND 10 THEN '6-10'
+    ELSE '11+'
+  END;
 
 
 -- 6. For 1■January■2024, determine the percentage distribution of logins across each hour of the
 -- day (00–23).
 
+WITH hourly AS (
+  SELECT 
+    HOUR(login_time) AS hour_tour,
+    COUNT(*) AS aux
+  FROM dwd_login
+  WHERE TO_DATE(login_time) = '2018-11-04'
+  GROUP BY HOUR(login_time)
+),
+total AS(
+  SELECT SUM(aux) AS total FROM hourly
+)
+SELECT
+  hour_tour,
+  ROUND( aux/ total.total *100,2) AS pct_distribution
+FROM hourly
+CROSS JOIN total
+ORDER BY hour_tour;
 
 -- 7. Produce a cumulative sum of logins by hour for 1■January■2024 so that each row shows the
 -- running total up to that hour.
-
+WITH count_by_hour AS(
+  SELECT
+    HOUR(login_time) AS hour,
+    COUNT(*) AS cnt
+  FROM dwd_login
+  WHERE TO_DATE(login_time) = '2018-11-04'
+  GROUP BY HOUR(login_time)
+)
+SELECT hour, cnt, SUM(cnt) OVER(
+  ORDER BY hour
+  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS cumulative_logs
+FROM count_by_hour
+ORDER BY hour;
 
 -- 8. For every calendar day, identify the three devices with the highest login counts. Break ties
 -- by device_id ascending.
+
 
 
 -- 9. Count how many users logged in on three consecutive calendar days at least once during the
 -- entire observation window.
 
 
+
 -- 10. Build a 7■day rolling average of daily distinct user counts and list the result for every
 -- day after the first 6 days.
+
 
 
 -- 11. Compute, for each month, the median daily login count (50th percentile) and the 95th
 -- percentile of daily login counts.
 
 
+
 -- 12. Find the day in the past 90 days (relative to the latest login_time) that has the highest
 -- ratio of total logins to distinct users.
+
 
 
 -- 13. Detect outlier days where total logins exceed the 30■day moving average by more than 3
 -- standard deviations.
 
 
+
 -- 14. For every device, calculate the variance of its daily login counts and list the 10 devices
 -- with the highest variance.
+
 
 
 -- 15. Build weekly cohorts based on a user’s first login week (ISO week). For each cohort,
 -- compute the retention matrix for weeks 0–4.
 
 
+
 -- 16. For each user, output the length of their longest streak of consecutive active days and
 -- rank users by streak length descending.
+
 
 
 -- 17. Compute a histogram of logins by hour_of_day (0–23) across the full dataset and report the
 -- mode hour (most logins).
 
 
+
 -- 18. Identify users who, on any single day, logged in from more than three distinct devices;
 -- list the user_id, the date, and the device count.
+
 
 
 -- 19. Define a session as a series of logins from the same device where consecutive logins are at
@@ -188,8 +273,10 @@ LIMIT 10;
 -- devices with the longest average session length.
 
 
+
 -- 20. Categorize users based on their longest consecutive■day streak: 1–3 days, 4–7 days, and 8+
 -- days. Return the count of users in each category.
+
 
 
 -- 21. Using collect_set, build the set of distinct device_ids per user for each calendar month,
@@ -198,9 +285,11 @@ LIMIT 10;
 -- score.
 
 
+
 -- 22. For each hour_of_day (0–23), calculate the 99th percentile of per■device login counts
 -- across all devices. Identify and list the hours where this percentile is more than twice the
 -- median of these 99th■percentile values.
+
 
 
 -- 23. For every ISO week, create a three■stage funnel: • Stage■A – users with at least one
@@ -209,11 +298,15 @@ LIMIT 10;
 -- and B→C for the latest 12 weeks in the dataset.
 
 
+
 -- 24. Identify "super■bursty" devices: those whose maximum daily login count is at least 10×
 -- their median daily login count and where this burst occurred within the last 30 days of data.
 -- Return device_id, burst_date, burst_count, and median_count, ordered by burst_count descending.
 
 
+
 -- 25. Using a sliding 180■day window, compute a z■score for each day's total login count (value
 -- minus mean divided by standard deviation of the window). Flag days where |z|■>■4 as extreme
 -- anomalies and list them chronologically with their z■scores.
+
+
